@@ -14,11 +14,24 @@ def main():
         min_tracking_confidence=0.6,
     )
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
     if not cap.isOpened():
         raise RuntimeError(
             "No se pudo abrir la camara. Revisa el indice de camara o los permisos."
         )
+    cv2.namedWindow("Filters", cv2.WINDOW_NORMAL)
+
+    screen_width = 1280
+    screen_height = 720
+
+    cv2.resizeWindow(
+        "Filters",
+        screen_width,
+        screen_height
+    )
+
 
     filtro_index = 0
     closing_detector = ClosingGestureDetector()
@@ -64,7 +77,7 @@ def main():
 
             frame = render_portal(frame, p1, p2, p3, p4, FILTROS[filtro_index])
 
-        cv2.imshow(" ", frame)
+        cv2.imshow("Filters", frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
