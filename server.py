@@ -51,6 +51,32 @@ filter_index = 0
 def health():
     return jsonify({"status": "ok", "service": "Filters Python backend"})
 
+@app.get("/api/diagnostics/mediapipe")
+def diagnose_mediapipe():
+    print("[DIAG] MediaPipe test started", flush=True)
+
+    try:
+        frame = np.zeros((240, 320, 3), dtype=np.uint8)
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        started = time.perf_counter()
+        print("[DIAG] Starting inference", flush=True)
+
+        result = hands.process(rgb)
+
+        elapsed_ms = (time.perf_counter() - started) * 1000
+        print(f"[DIAG] Inference finished in {elapsed_ms:.1f} ms", flush=True)
+
+        return jsonify({
+            "status": "ok",
+            "mediapipe_version": mp.__version__,
+            "inference_ms": round(elapsed_ms, 2),
+            "hands_detected": bool(result.multi_hand_landmarks),
+        })
+
+    except Exception as exc:
+        app.logger.exception("MediaPipe diagnostic failed")
+        return jsonify({"status": "error", "error": str(exc)}), 500
 
 @app.post("/api/process-frame")
 def process_frame():
