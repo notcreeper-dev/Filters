@@ -54,6 +54,7 @@ def health():
 
 @app.post("/api/process-frame")
 def process_frame():
+    print("[FRAME] Request received", flush=True)
     request_started = time.perf_counter()
     global filter_index
 
@@ -70,6 +71,10 @@ def process_frame():
         raw = base64.b64decode(encoded, validate=True)
         frame_array = np.frombuffer(raw, dtype=np.uint8)
         frame = cv2.imdecode(frame_array, cv2.IMREAD_COLOR)
+        print(
+            f"[FRAME] Decoded image: {frame.shape if frame is not None else 'None'}",
+            flush=True,
+        )
     except (ValueError, TypeError):
         return jsonify({"error": "Invalid image data."}), 400
 
@@ -85,7 +90,9 @@ def process_frame():
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     mediapipe_started = time.perf_counter()
+    print("[FRAME] Starting MediaPipe", flush=True)
     results = hands.process(rgb)
+    print("[FRAME] MediaPipe finished", flush=True)
     mediapipe_ms = (time.perf_counter() - mediapipe_started) * 1000
 
     portal_started = time.perf_counter()
@@ -124,6 +131,7 @@ def process_frame():
 
     portal_ms = (time.perf_counter() - portal_started) * 1000
     output_started = time.perf_counter()
+    print("[FRAME] Encoding output", flush=True)
     success, buffer = cv2.imencode(".jpg", frame)
     if not success:
         return jsonify({"error": "Could not encode processed frame."}), 500
