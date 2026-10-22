@@ -1,7 +1,7 @@
 
 "use strict";
 
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = "https://filters-bgrg.onrender.com";
 
 const camera = document.getElementById("camera");
 const processedCamera = document.getElementById("processedCamera");
