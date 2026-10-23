@@ -78,6 +78,23 @@ def diagnose_mediapipe():
         app.logger.exception("MediaPipe diagnostic failed")
         return jsonify({"status": "error", "error": str(exc)}), 500
 
+@app.get("/api/diagnostics/environment")
+def diagnose_environment():
+    import os
+    import platform
+    import cv2
+    import numpy as np
+    import mediapipe as mp
+
+    return jsonify({
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "mediapipe": mp.__version__,
+        "opencv": cv2.__version__,
+        "numpy": np.__version__,
+        "cpu_count": os.cpu_count(),
+    })
+
 @app.post("/api/process-frame")
 def process_frame():
     print("[FRAME] Request received", flush=True)
