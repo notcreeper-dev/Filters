@@ -93,6 +93,10 @@ def diagnose_environment():
         "opencv": cv2.__version__,
         "numpy": np.__version__,
         "cpu_count": os.cpu_count(),
+        "protobuf": __import__("google.protobuf").__version__,
+        "opencv_contrib": __import__(
+            "importlib.metadata", fromlist=["version"]
+        ).version("opencv-contrib-python"),
     })
 
 @app.post("/api/process-frame")
